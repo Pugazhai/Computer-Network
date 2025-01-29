@@ -1,0 +1,195 @@
+--------1----------
+
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+
+public class DES {
+    public static void main(String[] argv) {
+        try {
+            System.out.println("Message Encryption Using DES Algorithm\n----------");
+
+            // Generate a DES key
+            KeyGenerator keyGenerator = KeyGenerator.getInstance("DES");
+            SecretKey myDesKey = keyGenerator.generateKey();
+
+            // Create a Cipher instance using DES
+            Cipher desCipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+
+            // Initialize the cipher for encryption
+            desCipher.init(Cipher.ENCRYPT_MODE, myDesKey);
+
+            // Message to be encrypted
+            byte[] text = "Secret Information".getBytes();
+            System.out.println("Message [Byte Format]: " + new String(text));
+            System.out.println("Message: " + new String(text));
+
+            // Encrypt the message
+            byte[] textEncrypted = desCipher.doFinal(text);
+            System.out.println("Encrypted Message (Byte Format): " + textEncrypted);
+
+            // Initialize the cipher for decryption
+            desCipher.init(Cipher.DECRYPT_MODE, myDesKey);
+
+            // Decrypt the encrypted message
+            byte[] textDecrypted = desCipher.doFinal(textEncrypted);
+            System.out.println("Decrypted Message: " + new String(textDecrypted));
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+-----------2--------------
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSA Encryption</title>
+</head>
+<body>
+    <center>
+        <h1>RSA Algorithm</h1>
+        <h2>Implemented Using HTML & JavaScript</h2>
+        <hr>
+        <table>
+            <tr>
+                <td>Enter First Prime Number:</td>
+                <td><input type="number" value="53" id="p"></td>
+            </tr>
+            <tr>
+                <td>Enter Second Prime Number:</td>
+                <td><input type="number" value="59" id="q"></td>
+            </tr>
+            <tr>
+                <td>Enter the Message (Plaintext as a number):</td>
+                <td><input type="number" value="89" id="msg"></td>
+            </tr>
+            <tr>
+                <td>Public Key (n):</td>
+                <td><p id="publickey"></p></td>
+            </tr>
+            <tr>
+                <td>Exponent (e):</td>
+                <td><p id="exponent"></p></td>
+            </tr>
+            <tr>
+                <td>Private Key (d):</td>
+                <td><p id="privatekey"></p></td>
+            </tr>
+            <tr>
+                <td>Cipher Text:</td>
+                <td><p id="ciphertext"></p></td>
+            </tr>
+            <tr>
+                <td><button onclick="RSA();">Apply RSA</button></td>
+            </tr>
+        </table>
+    </center>
+
+    <script>
+        function gcd(a, b) {
+            return b === 0 ? a : gcd(b, a % b);
+        }
+
+        function modInverse(e, t) {
+            for (let i = 1; i < t; i++) {
+                if ((e * i) % t === 1) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        function RSA() {
+            let p = parseInt(document.getElementById('p').value);
+            let q = parseInt(document.getElementById('q').value);
+            let msg = parseInt(document.getElementById('msg').value);
+
+            let n = p * q;
+            let t = (p - 1) * (q - 1);
+
+            let e;
+            for (e = 2; e < t; e++) {
+                if (gcd(e, t) === 1) {
+                    break;
+                }
+            }
+
+            let d = modInverse(e, t);
+
+            if (d === -1) {
+                alert("Error calculating private key.");
+                return;
+            }
+
+            let ct = Math.pow(msg, e) % n;
+            let dt = Math.pow(ct, d) % n;
+
+            document.getElementById('publickey').innerHTML = n;
+            document.getElementById('exponent').innerHTML = e;
+            document.getElementById('privatekey').innerHTML = d;
+            document.getElementById('ciphertext').innerHTML = ct;
+        }
+    </script>
+</body>
+</html>
+
+
+--------3-----------
+
+class DiffieHellman {
+    public static void main(String args[]) {
+        int p = 23;  // Publicly known prime number
+        int g = 5;   // Publicly known primitive root
+
+        int x = 4;   // Alice's private key
+        int y = 3;   // Bob's private key
+
+        // Alice computes A = g^x mod p and sends it to Bob
+        double aliceSends = Math.pow(g, x) % p;
+
+        // Bob computes B = g^y mod p and sends it to Alice
+        double bobSends = Math.pow(g, y) % p;
+
+        // Bob computes the shared secret: (Alice's message)^y mod p
+        double bobComputes = Math.pow(aliceSends, y) % p;
+
+        // Alice computes the shared secret: (Bob's message)^x mod p
+        double aliceComputes = Math.pow(bobSends, x) % p;
+
+        // Theoretical shared secret (should be equal to both calculations)
+        double sharedSecret = Math.pow(g, (x * y)) % p;
+
+        System.out.println("Simulation of Diffie-Hellman Key Exchange Algorithm\n------------------------");
+        System.out.println("Alice Sends : " + aliceSends);
+        System.out.println("Bob Computes : " + bobComputes);
+        System.out.println("Bob Sends : " + bobSends);
+        System.out.println("Alice Computes : " + aliceComputes);
+        System.out.println("Shared Secret : " + sharedSecret);
+
+        // Check if shared secrets match
+        if ((aliceComputes == sharedSecret) && (aliceComputes == bobComputes)) {
+            System.out.println("Success: Shared Secrets Match! " + sharedSecret);
+        } else {
+            System.out.println("Error: Shared Secrets Do Not Match!");
+        }
+    }
+}
